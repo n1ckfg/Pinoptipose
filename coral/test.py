@@ -32,9 +32,6 @@ from pycoral.utils.edgetpu import make_interpreter
 
 _NUM_KEYPOINTS = 17
 
-def get_output(interpreter, top_k, score_threshold):
-    pass
-
 def main():
     default_model_dir = './models'
     default_model = 'movenet_single_pose_lightning_ptq_edgetpu.tflite'
@@ -51,7 +48,7 @@ def main():
         camera.framerate = 30
         camera.annotate_text_size = 20
         width, height, channels = common.input_image_size(interpreter)
-        camera.start_preview()
+        #camera.start_preview()
         try:
             stream = io.BytesIO()
             fps = deque(maxlen=20)
