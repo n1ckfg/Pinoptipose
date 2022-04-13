@@ -5,10 +5,10 @@ from PIL import Image
 import numpy as np
 import time
 
-data_folder = "/home/pi/TFLite_MobileNet/"
+data_folder = "../models/"
 
-model_path = data_folder + "mobilenet_v1_1.0_224_quant.tflite"
-label_path = data_folder + "labels_mobilenet_quant_v1_224.txt"
+model_path = data_folder + "mobilenet_v2_1.0_224_quant.tflite"
+label_path = data_folder + "imagenet_labels.txt"
 
 interpreter = Interpreter(model_path)
 print("Model Loaded Successfully.")
