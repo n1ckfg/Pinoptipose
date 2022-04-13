@@ -31,16 +31,26 @@ from PIL import ImageDraw
 from pycoral.utils.edgetpu import make_interpreter
 
 _NUM_KEYPOINTS = 17
+doPreview = False
+useTpu = False
 
 def main():
-    default_model_dir = './models'
-    default_model = 'movenet_single_pose_lightning_ptq_edgetpu.tflite'
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', help='.tflite model path', default=os.path.join(default_model_dir,default_model))
 
+    parser.add_argument('--tpu', help='use coral tpu', default=0)
+    parser.add_argument('--preview', help='show video preview', default=0)
     args = parser.parse_args()
 
-    interpreter = make_interpreter(args.model)
+    useTpu = bool(int(args.tpu))
+    doPreview = bool(int(args.preview))
+
+    modelDir = './models'
+    modelFile = 'movenet_single_pose_lightning_ptq.tflite'
+    if (useTpu == True):
+        modelFile = 'movenet_single_pose_lightning_ptq_edgetpu.tflite'
+    modelUrl = os.path.join(modelDir, modelFile)
+
+    interpreter = make_interpreter(modelUrl)
     interpreter.allocate_tensors()
 
     with picamera.PiCamera() as camera:
@@ -48,7 +58,10 @@ def main():
         camera.framerate = 30
         camera.annotate_text_size = 20
         width, height, channels = common.input_image_size(interpreter)
-        #camera.start_preview()
+
+        if (doPreview == True):
+            camera.start_preview()
+
         try:
             stream = io.BytesIO()
             fps = deque(maxlen=20)
@@ -62,25 +75,15 @@ def main():
                 input = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 start_ms = time.time()
                 common.input_tensor(interpreter)[:,:] = np.reshape(input, common.input_image_size(interpreter))
-                
+
                 interpreter.invoke()
 
                 pose = common.output_tensor(interpreter, 0).copy().reshape(_NUM_KEYPOINTS, 3)
                 print(pose)
 
-
-                '''
-                results = get_output(interpreter, top_k=3, score_threshold=0)
-                inference_ms = (time.time() - start_ms)*1000.0
-                fps.append(time.time())
-                fps_ms = len(fps)/(fps[-1] - fps[0])
-                camera.annotate_text = 'Inference: {:5.2f}ms FPS: {:3.1f}'.format(inference_ms, fps_ms)
-                for result in results:
-                   camera.annotate_text += '\n{:.0f}% {}'.format(100*result[1], labels[result[0]])
-                print(camera.annotate_text)
-                '''
         finally:
-            camera.stop_preview()
+            if (doPreview == True):
+                camera.stop_preview()
 
 
 if __name__ == '__main__':
