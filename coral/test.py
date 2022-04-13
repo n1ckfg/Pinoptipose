@@ -31,8 +31,8 @@ from PIL import ImageDraw
 from pycoral.utils.edgetpu import make_interpreter
 
 _NUM_KEYPOINTS = 17
-doPreview = False
-useTpu = False
+doPreview = True
+useTpu = True
 
 def main():
     parser = argparse.ArgumentParser()
@@ -45,9 +45,9 @@ def main():
     doPreview = bool(int(args.preview))
 
     modelDir = './models'
-    modelFile = 'movenet_single_pose_lightning_ptq.tflite'
-    if (useTpu == True):
-        modelFile = 'movenet_single_pose_lightning_ptq_edgetpu.tflite'
+    modelFile = 'movenet_single_pose_lightning_ptq_edgetpu.tflite'
+    if (useTpu == False):
+        modelFile = 'movenet_single_pose_lightning_ptq.tflite'
     modelUrl = os.path.join(modelDir, modelFile)
 
     interpreter = make_interpreter(modelUrl)
