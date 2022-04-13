@@ -44,7 +44,7 @@ def main():
     useTpu = bool(int(args.tpu))
     doPreview = bool(int(args.preview))
 
-    modelDir = './models'
+    modelDir = '../models'
     modelFile = 'movenet_single_pose_lightning_ptq_edgetpu.tflite'
     if (useTpu == False):
         modelFile = 'movenet_single_pose_lightning_ptq.tflite'

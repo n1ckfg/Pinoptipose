@@ -38,7 +38,7 @@ def get_output(interpreter, top_k, score_threshold):
     return sorted(categories, key=operator.itemgetter(1), reverse=True)
 
 def main():
-    default_model_dir = './models' #'../all_models'
+    default_model_dir = '../models'
     default_model = 'mobilenet_v2_1.0_224_quant_edgetpu.tflite'
     #default_model = 'mobilenet_v2_1.0_224_quant.tflite'
     default_labels = 'imagenet_labels.txt'
