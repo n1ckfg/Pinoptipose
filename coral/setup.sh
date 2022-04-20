@@ -8,8 +8,9 @@ echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sud
 curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 sudo apt-get update
 
-sudo apt-get install -y libedgetpu1-std python3-pycoral
-sudo pip3 install picamera
+sudo apt-get install -y libedgetpu1-std python3-pycoral libssl-dev
+sudo pip3 install picamera numpy tflite-runtime tflite-support
+sudo pip3 install opencv-python
 
 echo "Reboot before testing."
 

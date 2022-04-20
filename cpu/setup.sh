@@ -1,4 +1,5 @@
 sudo apt-get install libssl-dev
-pip3 install numpy opencv-python tflite-runtime tflite-support
-echo "If you get build errors, run the Coral setup script first."
+pip3 install numpy tflite-runtime tflite-support
+sudo pip3 install opencv-python
+echo "If you get errors, run the Coral setup script first."
 
