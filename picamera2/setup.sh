@@ -27,6 +27,7 @@ ninja -C build
 # python-v4l2 doesn't need to be compiled
 # picamera2 doesn't need to be compiled
 
+# put this in .bashrc
 export PYTHONPATH=/home/pi/picamera2:/home/pi/libcamera/build/src/py:/home/pi/kmsxx/build/py:/home/pi/python-v4l2
 
 
