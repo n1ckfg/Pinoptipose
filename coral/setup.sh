@@ -10,7 +10,7 @@ sudo apt-get update
 
 sudo apt-get install -y libedgetpu1-std python3-pycoral libssl-dev
 sudo pip3 install picamera numpy tflite-runtime tflite-support
-sudo pip3 install opencv-python
+sudo pip3 install opencv-python opencv-python-headless
 
 echo "Reboot before testing."
 

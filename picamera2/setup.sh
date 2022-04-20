@@ -6,6 +6,7 @@ sudo apt-get install -y qtbase5-dev libqt5core5a libqt5gui5 libqt5widgets5 libqt
 
 sudo pip3 install jinja2 pyopengl piexif pyyaml ply tflite-runtime tflite-support
 sudo pip3 install --upgrade meson numpy
+sudo pip3 install opencv-python opencv-python-headless
 
 cd ~/
 
