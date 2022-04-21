@@ -27,8 +27,7 @@ import time
 
 from PIL import Image
 from PIL import ImageDraw
-#from pycoral.adapters import common
-from pycoral.utils.edgetpu import make_interpreter
+from common import make_interpreter
 
 _NUM_KEYPOINTS = 17
 doPreview = True
@@ -37,17 +36,13 @@ useTpu = True
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--tpu', help='use coral tpu', default=0)
     parser.add_argument('--preview', help='show video preview', default=0)
     args = parser.parse_args()
 
-    useTpu = bool(int(args.tpu))
     doPreview = bool(int(args.preview))
 
     modelDir = '../models'
-    modelFile = 'movenet_single_pose_lightning_ptq_edgetpu.tflite'
-    if (useTpu == False):
-        modelFile = 'movenet_single_pose_lightning_ptq.tflite'
+    modelFile = 'movenet_single_pose_lightning_ptq.tflite'
     modelUrl = os.path.join(modelDir, modelFile)
 
     interpreter = make_interpreter(modelUrl)

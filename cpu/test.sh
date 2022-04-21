@@ -1,3 +1,3 @@
-python3 test.py --preview=1 --tpu=1
+python3 test.py --preview=1
 
 

@@ -74,7 +74,7 @@ def main():
                 pose = common.output_tensor(interpreter, 0).copy().reshape(_NUM_KEYPOINTS, 3)
                 print(pose)
 
-            except:
+            finally:
                 pass
 
 

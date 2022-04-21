@@ -35,8 +35,8 @@ import argparse
 
 from PIL import Image
 from PIL import ImageDraw
-from pycoral.adapters import common
-from pycoral.utils.edgetpu import make_interpreter
+import common
+from common import make_interpreter
 
 _NUM_KEYPOINTS = 17
 
