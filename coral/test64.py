@@ -54,36 +54,28 @@ def main():
     interpreter.allocate_tensors()
 
     with Picamera2() as camera:
-        camera.resolution = (640, 480)
-        camera.framerate = 30
-        camera.annotate_text_size = 20
         width, height, channels = common.input_image_size(interpreter)
+        
+        camera.configure(camera.preview_configuration(main={"format": 'RGB888', "size": (640, 480)}))
 
         if (doPreview == True):
             camera.start_preview()
+        
+        camera.start()
+        
+        while True:
+            try:
+                input = camera.capture_array()
 
-        try:
-            stream = io.BytesIO()
-            fps = deque(maxlen=20)
-            fps.append(time.time())
-            for foo in camera.capture_continuous(stream,
-                                                 format='rgb',
-                                                 use_video_port=True,
-                                                 resize=(width, height)):
-                stream.truncate()
-                stream.seek(0)
-                input = np.frombuffer(stream.getvalue(), dtype=np.uint8)
-                start_ms = time.time()
-                common.input_tensor(interpreter)[:,:] = np.reshape(input, common.input_image_size(interpreter))
+                common.input_tensor(interpreter)[:,:] = np.resize(input, common.input_image_size(interpreter))
 
                 interpreter.invoke()
 
                 pose = common.output_tensor(interpreter, 0).copy().reshape(_NUM_KEYPOINTS, 3)
                 print(pose)
 
-        finally:
-            if (doPreview == True):
-                camera.stop_preview()
+            except:
+                pass
 
 
 if __name__ == '__main__':
