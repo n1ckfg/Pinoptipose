@@ -25,35 +25,32 @@ import picamera
 import tflite_runtime.interpreter as tflite
 import time
 
-Category = collections.namedtuple('Category', ['id', 'score'])
+from PIL import Image
+from PIL import ImageDraw
+#from pycoral.adapters import common
+from pycoral.utils.edgetpu import make_interpreter
 
-def get_output(interpreter, top_k, score_threshold):
-    """Returns no more than top_k categories with score >= score_threshold."""
-    scores = common.output_tensor(interpreter, 0)
-    categories = [
-        Category(i, scores[i])
-        for i in np.argpartition(scores, -top_k)[-top_k:]
-        if scores[i] >= score_threshold
-    ]
-    return sorted(categories, key=operator.itemgetter(1), reverse=True)
+_NUM_KEYPOINTS = 17
+doPreview = True
+useTpu = True
 
 def main():
-    default_model_dir = '../models'
-    default_model = 'mobilenet_v2_1.0_224_quant_edgetpu.tflite'
-    #default_model = 'mobilenet_v2_1.0_224_quant.tflite'
-    default_labels = 'imagenet_labels.txt'
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', help='.tflite model path',
-                        default=os.path.join(default_model_dir,default_model))
-    parser.add_argument('--labels', help='label file path',
-                        default=os.path.join(default_model_dir, default_labels))
+
+    parser.add_argument('--tpu', help='use coral tpu', default=0)
+    parser.add_argument('--preview', help='show video preview', default=0)
     args = parser.parse_args()
 
-    with open(args.labels, 'r') as f:
-        pairs = (l.strip().split(maxsplit=1) for l in f.readlines())
-        labels = dict((int(k), v) for k, v in pairs)
+    useTpu = bool(int(args.tpu))
+    doPreview = bool(int(args.preview))
 
-    interpreter = common.make_interpreter(args.model)
+    modelDir = '../models'
+    modelFile = 'movenet_single_pose_lightning_ptq_edgetpu.tflite'
+    if (useTpu == False):
+        modelFile = 'movenet_single_pose_lightning_ptq.tflite'
+    modelUrl = os.path.join(modelDir, modelFile)
+
+    interpreter = make_interpreter(modelUrl)
     interpreter.allocate_tensors()
 
     with picamera.PiCamera() as camera:
@@ -61,7 +58,10 @@ def main():
         camera.framerate = 30
         camera.annotate_text_size = 20
         width, height, channels = common.input_image_size(interpreter)
-        camera.start_preview()
+
+        if (doPreview == True):
+            camera.start_preview()
+
         try:
             stream = io.BytesIO()
             fps = deque(maxlen=20)
@@ -75,17 +75,15 @@ def main():
                 input = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 start_ms = time.time()
                 common.input_tensor(interpreter)[:,:] = np.reshape(input, common.input_image_size(interpreter))
+
                 interpreter.invoke()
-                results = get_output(interpreter, top_k=3, score_threshold=0)
-                inference_ms = (time.time() - start_ms)*1000.0
-                fps.append(time.time())
-                fps_ms = len(fps)/(fps[-1] - fps[0])
-                camera.annotate_text = 'Inference: {:5.2f}ms FPS: {:3.1f}'.format(inference_ms, fps_ms)
-                for result in results:
-                   camera.annotate_text += '\n{:.0f}% {}'.format(100*result[1], labels[result[0]])
-                print(camera.annotate_text)
+
+                pose = common.output_tensor(interpreter, 0).copy().reshape(_NUM_KEYPOINTS, 3)
+                print(pose)
+
         finally:
-            camera.stop_preview()
+            if (doPreview == True):
+                camera.stop_preview()
 
 
 if __name__ == '__main__':
