@@ -1,6 +1,2 @@
-VERSION="2.4.0"
-FILENAME="tensorflow-$VERSION-cp37-none-linux_armv6l.whl"
+sudo pip3 install https://github.com/driedler/tflite_runtime_rpi0w/releases/download/2.5.0/tflite_runtime-2.5.0-cp37-cp37m-linux_armv6l.whl
 
-wget https://github.com/lhelontra/tensorflow-on-arm/releases/download/v$VERSION/$FILENAME
-pip3 install $FILENAME
-rm $FILENAME
